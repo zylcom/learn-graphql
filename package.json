@@ -9,7 +9,7 @@
   },
   "private": true,
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node api/index.js"
   },
   "author": "sabil",
   "license": "ISC",
