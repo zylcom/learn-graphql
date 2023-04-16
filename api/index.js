@@ -3,7 +3,7 @@ import express, { json, urlencoded } from "express";
 import { ApolloServer } from "@apollo/server";
 import { expressjwt } from "express-jwt";
 import { expressMiddleware } from "@apollo/server/express4";
-import { typeDefs, resolvers } from "./src/schema.js";
+import { typeDefs, resolvers } from "../src/schema.js";
 
 const app = express();
 const PORT = 4000;
