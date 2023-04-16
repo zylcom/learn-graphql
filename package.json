@@ -1,0 +1,33 @@
+{
+  "name": "apollo-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.mjs",
+  "type": "module",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "private": true,
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "sabil",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.1.1",
+    "@prisma/client": "^4.6.1",
+    "apollo-server": "^3.10.2",
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-jwt": "^8.4.1",
+    "graphql": "^16.6.0",
+    "jsonwebtoken": "^9.0.0",
+    "libphonenumber-js": "^1.10.21",
+    "prisma": "^4.4.0",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0"
+  }
+}
