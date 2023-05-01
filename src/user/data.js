@@ -107,7 +107,7 @@ async function getMyProfile(_, {}, context) {
   return result;
 }
 
-async function registerUser(_, { email, name, phoneNumber, password, avatar = "default.jpg", countryCode }) {
+async function registerUser(_, { email, name, phoneNumber, password, confirmationPassword, avatar = "default.jpg", countryCode }) {
   const saltRounds = 10;
   const salt = genSaltSync(saltRounds);
   const password_hash = hashSync(password, salt);
@@ -123,6 +123,14 @@ async function registerUser(_, { email, name, phoneNumber, password, avatar = "d
 
     if (!isEmail(email)) {
       throw new Error("Email is invalid!");
+    }
+
+    if (password !== confirmationPassword) {
+      throw new Error("Password and confirmation password are not match!");
+    }
+
+    if (confirmationPassword.length < 8) {
+      throw new Error("Password length must 8 or above!");
     }
 
     const parsedPhoneNumber = parsePhoneNumber(phoneNumber, countryCode);
