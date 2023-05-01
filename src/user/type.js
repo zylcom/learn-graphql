@@ -64,7 +64,7 @@ const userType = `#graphql
   }
 
   type Mutation {
-    registerUser(email: String!, name: String!, phoneNumber: String!, password: String!, avatar:String, countryCode: String!): RegisterUserResult
+    registerUser(email: String!, name: String!, phoneNumber: String!, password: String!, confirmationPassword: String!, avatar:String, countryCode: String!): RegisterUserResult
     updateMyCart(productId: Int!, quantity: Int!): MyCartResult
     deleteCartItemById(cartItemId: Int!): MyCartResult
   }
