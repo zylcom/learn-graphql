@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 
 const saltRounds = 10;
 const salt = genSaltSync(saltRounds);
-const password_hash = hashSync("rahasia", salt);
+const password_hash = hashSync("rahasia123", salt);
 
 const prisma = new PrismaClient();
 const createUserCount = 100;
