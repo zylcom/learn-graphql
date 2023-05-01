@@ -9,7 +9,7 @@ const app = express();
 const PORT = 4000;
 const SECRET_KEY = process.env.SECRET_KEY;
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "*",
 };
 
 app.use(cors(corsOptions));
