@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { json, urlencoded } from "express";
 import { ApolloServer } from "@apollo/server";
+import { ApolloServerPluginLandingPageProductionDefault } from "@apollo/server/plugin/landingPage/default";
 import { expressjwt } from "express-jwt";
 import { expressMiddleware } from "@apollo/server/express4";
 import { typeDefs, resolvers } from "../src/schema.js";
@@ -23,7 +24,7 @@ const server = new ApolloServer({
   csrfPrevention: true,
   cache: "bounded",
   introspection: true,
-  embed: true,
+  plugins: [ApolloServerPluginLandingPageProductionDefault({ embed: true })],
 });
 
 await server.start();

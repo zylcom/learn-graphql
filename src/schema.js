@@ -2,9 +2,8 @@ import userType from "./user/type.js";
 import userResolvers from "./user/data.js";
 import productType from "./product/type.js";
 import productResolvers from "./product/data.js";
-import { gql } from "apollo-server";
 
-const typeDefs = gql`
+const typeDefs = `#graphql
   scalar Datetime
 
   interface BaseError {
