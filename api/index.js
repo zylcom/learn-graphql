@@ -23,6 +23,7 @@ const server = new ApolloServer({
   csrfPrevention: true,
   cache: "bounded",
   introspection: true,
+  embed: true,
 });
 
 await server.start();
