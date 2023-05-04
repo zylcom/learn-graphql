@@ -349,8 +349,6 @@ async function checkoutOrder(_, {}, context) {
       },
     });
 
-    console.log(order);
-
     await prisma.cart.update({ where: { id: user.cart.id }, data: { cartItems: { deleteMany: {} } } });
 
     return { __typename: "Receipt", ...order.receipt, orderItems: order.orderItems };
