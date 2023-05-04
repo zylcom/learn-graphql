@@ -353,6 +353,7 @@ async function checkoutOrder(_, {}, context) {
 
     return { __typename: "Receipt", ...order.receipt, orderItems: order.orderItems };
   } catch (error) {
+    console.error(error);
     return { __typename: "CheckoutError", message: error.message };
   }
 }
