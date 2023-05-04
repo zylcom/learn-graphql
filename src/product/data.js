@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { verifyToken } from "../utils/index.js";
+import { calculateTotalPrice, verifyToken } from "../utils/index.js";
 
 const prisma = new PrismaClient({ errorFormat: "minimal" });
 
@@ -296,7 +296,71 @@ async function neutralizeLikeProduct(_, { productId }, context) {
   }
 }
 
+async function checkoutOrder(_, {}, context) {
+  const decodedToken = verifyToken(context.token);
+
+  if (decodedToken.error) {
+    return { __typename: "CheckoutError", message: decodedToken.error.message };
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: decodedToken.data.id }, include: { cart: true } });
+
+  if (!user) {
+    return { __typename: "CheckoutError", message: "Unauthorized!" };
+  }
+
+  try {
+    const cartItems = await prisma.cartItem.findMany({ where: { cartId: user.cart.id }, include: { product: true } });
+
+    if (cartItems.length < 1) {
+      throw new Error("There no items to checkout.");
+    }
+
+    const totalAmount = calculateTotalPrice(cartItems);
+
+    const order = await prisma.orderRecord.create({
+      data: {
+        status: "success",
+        receipt: { create: { totalAmount, user: { connect: { id: user.id } } } },
+        user: { connect: { id: user.id } },
+        payment: { create: { amount: totalAmount, method: "DANA" } },
+        shipment: {
+          create: {
+            address: "Bojong Raya RT001/004",
+            city: "Jakarta Barat",
+            state: "DKI Jakarta",
+            country: "Indonesia",
+            zipCode: "11740",
+            user: { connect: { id: user.id } },
+          },
+        },
+        orderItems: {
+          createMany: {
+            data: cartItems.map((item) => {
+              return { productId: item.productId, quantity: item.quantity };
+            }),
+          },
+        },
+      },
+      include: {
+        orderItems: { include: { product: true } },
+        shipment: true,
+        receipt: true,
+      },
+    });
+
+    console.log(order);
+
+    await prisma.cart.update({ where: { id: user.cart.id }, data: { cartItems: { deleteMany: {} } } });
+
+    return { __typename: "Receipt", ...order.receipt, orderItems: order.orderItems };
+  } catch (error) {
+    return { __typename: "CheckoutError", message: error.message };
+  }
+}
+
 export default {
+  checkoutOrder,
   createReview,
   getAllProductCategory,
   getAllProductTag,

@@ -51,11 +51,26 @@ const productType = `#graphql
     likesCount: Int
   }
 
+  type Receipt {
+    id: ID!
+    orderId: ID!
+    totalAmount: Int!
+    orderItems: [Item]!
+    createdAt: Datetime
+  }
+
   type Review {
     id: ID!
     description: String
     rating: Int!
     user: User
+  }
+
+  type Item {
+    id: ID!
+    productId: ID!
+    product: Product!
+    quantity: Int!
   }
 
   type PageInfo {
@@ -121,6 +136,10 @@ const productType = `#graphql
     message: String!
   }
 
+  type CheckoutError implements BaseError {
+    message: String!
+  }
+
   union BestRatedProductResult = BestRatedProductList | ProductError
   union ProductResult = Product | ProductError
   union ProductListResult = ProductList | ProductError
@@ -130,6 +149,7 @@ const productType = `#graphql
   union UpdateReviewResult = Review | FailUpdateReview
   union LikeProductResult = Like | FailLikeProduct
   union NeutralizeLikeProductResult = Like | FailNeutralizeLikeProduct
+  union CheckoutResult = Receipt | CheckoutError
   
   type Query {
     getAllProductCategory: CategoryListResult
@@ -143,6 +163,7 @@ const productType = `#graphql
   }
 
   type Mutation {
+    checkoutOrder: CheckoutResult
     createReview(productId: Int!, description: String, rating: Int!): CreateReviewResult
     likeProduct(productId: Int!): LikeProductResult
     neutralizeLikeProduct(productId: Int!): NeutralizeLikeProductResult

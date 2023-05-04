@@ -1,6 +1,7 @@
 import { genSaltSync, hashSync } from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import { generateUniqueRandomId, randomizeLikeProduct, randomizeReviewProduct } from "../src/utils/index.js";
 
 const saltRounds = 10;
 const salt = genSaltSync(saltRounds);
@@ -8,49 +9,6 @@ const password_hash = hashSync("rahasia123", salt);
 
 const prisma = new PrismaClient();
 const createUserCount = 100;
-const generatedId = [];
-
-function generateUniqueRandomId() {
-  let randomId;
-
-  // Keep generating random id until we find one that is unique
-  do {
-    randomId = Math.floor(Math.random() * createUserCount) + 1; // Generate a random id between 1 and 100
-  } while (generatedId.includes(randomId)); // Check if the id has been generated before
-
-  // Add the id to the generated id array
-  generatedId.push(randomId);
-
-  return randomId;
-}
-
-function randomizeLikeProduct() {
-  const data = [];
-
-  for (let index = 0; index < Math.floor(Math.random() * createUserCount); index++) {
-    data.push({ user: { connect: { id: generateUniqueRandomId() } } });
-  }
-
-  generatedId.length = 0;
-
-  return data;
-}
-
-function randomizeReviewProduct() {
-  const data = [];
-
-  for (let index = 0; index < Math.floor(Math.random() * createUserCount); index++) {
-    data.push({
-      description: faker.lorem.sentence(),
-      rating: Math.floor(Math.random() * 5) + 1,
-      user: { connect: { id: generateUniqueRandomId() } },
-    });
-  }
-
-  generatedId.length = 0;
-
-  return data;
-}
 
 const categories = [
   { id: 1, name: "Food", slug: "food" },
@@ -96,10 +54,10 @@ const products = [
       create: [{ tag: { connect: { id: 1 } } }, { tag: { connect: { id: 4 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -113,10 +71,10 @@ const products = [
       create: [{ tag: { connect: { id: 7 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -130,10 +88,10 @@ const products = [
       create: [{ tag: { connect: { id: 7 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -147,10 +105,10 @@ const products = [
       create: [{ tag: { connect: { id: 8 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -164,10 +122,10 @@ const products = [
       create: [{ tag: { connect: { id: 9 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -181,10 +139,10 @@ const products = [
       create: [{ tag: { connect: { id: 10 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -198,10 +156,10 @@ const products = [
       create: [{ tag: { connect: { id: 11 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -215,10 +173,10 @@ const products = [
       create: [{ tag: { connect: { id: 12 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -232,10 +190,10 @@ const products = [
       create: [{ tag: { connect: { id: 7 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -249,10 +207,10 @@ const products = [
       create: [{ tag: { connect: { id: 10 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -266,10 +224,10 @@ const products = [
       create: [{ tag: { connect: { id: 13 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -283,10 +241,10 @@ const products = [
       create: [{ tag: { connect: { id: 14 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -300,10 +258,10 @@ const products = [
       create: [{ tag: { connect: { id: 15 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -317,10 +275,10 @@ const products = [
       create: [{ tag: { connect: { id: 16 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -334,10 +292,10 @@ const products = [
       create: [{ tag: { connect: { id: 17 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -351,10 +309,10 @@ const products = [
       create: [{ tag: { connect: { id: 10 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -368,10 +326,10 @@ const products = [
       create: [{ tag: { connect: { id: 18 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -385,10 +343,10 @@ const products = [
       create: [{ tag: { connect: { id: 13 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -402,10 +360,10 @@ const products = [
       create: [{ tag: { connect: { id: 10 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -419,10 +377,10 @@ const products = [
       create: [{ tag: { connect: { id: 10 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -436,10 +394,10 @@ const products = [
       create: [{ tag: { connect: { id: 10 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -453,10 +411,10 @@ const products = [
       create: [{ tag: { connect: { id: 9 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -470,10 +428,10 @@ const products = [
       create: [{ tag: { connect: { id: 19 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -487,10 +445,10 @@ const products = [
       create: [{ tag: { connect: { id: 11 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -504,10 +462,10 @@ const products = [
       create: [{ tag: { connect: { id: 13 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -521,10 +479,10 @@ const products = [
       create: [{ tag: { connect: { id: 13 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -538,10 +496,10 @@ const products = [
       create: [{ tag: { connect: { id: 20 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -555,10 +513,10 @@ const products = [
       create: [{ tag: { connect: { id: 13 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -572,10 +530,10 @@ const products = [
       create: [{ tag: { connect: { id: 21 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -589,10 +547,10 @@ const products = [
       create: [{ tag: { connect: { id: 22 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -606,10 +564,10 @@ const products = [
       create: [{ tag: { connect: { id: 22 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -623,10 +581,10 @@ const products = [
       create: [{ tag: { connect: { id: 12 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -640,10 +598,10 @@ const products = [
       create: [{ tag: { connect: { id: 12 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -657,10 +615,10 @@ const products = [
       create: [{ tag: { connect: { id: 23 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -674,10 +632,10 @@ const products = [
       create: [{ tag: { connect: { id: 24 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -691,10 +649,10 @@ const products = [
       create: [{ tag: { connect: { id: 11 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -708,10 +666,10 @@ const products = [
       create: [{ tag: { connect: { id: 11 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -725,10 +683,10 @@ const products = [
       create: [{ tag: { connect: { id: 11 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -742,10 +700,10 @@ const products = [
       create: [{ tag: { connect: { id: 23 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -759,10 +717,10 @@ const products = [
       create: [{ tag: { connect: { id: 20 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -776,10 +734,10 @@ const products = [
       create: [{ tag: { connect: { id: 8 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -793,10 +751,10 @@ const products = [
       create: [{ tag: { connect: { id: 23 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -810,10 +768,10 @@ const products = [
       create: [{ tag: { connect: { id: 8 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -827,10 +785,10 @@ const products = [
       create: [{ tag: { connect: { id: 12 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -844,10 +802,10 @@ const products = [
       create: [{ tag: { connect: { id: 1 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -861,10 +819,10 @@ const products = [
       create: [{ tag: { connect: { id: 6 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -878,10 +836,10 @@ const products = [
       create: [{ tag: { connect: { id: 25 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
   {
@@ -895,22 +853,14 @@ const products = [
       create: [{ tag: { connect: { id: 26 } } }],
     },
     likes: {
-      create: randomizeLikeProduct(),
+      create: randomizeLikeProduct(createUserCount),
     },
     reviews: {
-      create: randomizeReviewProduct(),
+      create: randomizeReviewProduct(createUserCount),
     },
   },
 ];
 const users = [
-  {
-    id: 1,
-    email: "zylcom@dev.com",
-    phoneNumber: "0812-3456-7890",
-    name: "Zylcom",
-    password: password_hash,
-    avatar: faker.internet.avatar(),
-  },
   {
     id: 2,
     email: "sabil@dev.com",
@@ -936,6 +886,18 @@ async function main() {
   const categoryCount = await prisma.category.createMany({ data: categories });
   const tagCount = await prisma.tag.createMany({ data: tags });
 
+  await prisma.user.create({
+    data: {
+      id: 1,
+      email: "zylcom@dev.com",
+      phoneNumber: "0812-3456-7890",
+      name: "Zylcom",
+      password: password_hash,
+      avatar: faker.internet.avatar(),
+      cart: { create: { id: 1 } },
+    },
+    include: { cart: { include: { cartItems: true } } },
+  });
   users.forEach(async (user) => {
     const result = await prisma.user.create({ data: { ...user, cart: { create: {} } }, include: { cart: { include: { cartItems: true } } } });
 
@@ -963,14 +925,18 @@ async function main() {
       console.log(result);
     });
 
-    const result = await prisma.cartItem.upsert({
-      update: { cart: { connect: { id: 1 } }, product: { connect: { id: 1 } }, quantity: 5 },
-      create: { cart: { connect: { id: 1 } }, product: { connect: { id: 1 } }, quantity: 5 },
-      where: { productItem: { productId: 1, cartId: 1 } },
-      include: { cart: { include: { cartItems: true } } },
-    });
+    for (let index = 0; index < Math.floor(Math.random() * 48); index++) {
+      const randomUniqueID = generateUniqueRandomId(48);
+      const result = await prisma.cartItem.upsert({
+        update: { cart: { connect: { id: 1 } }, product: { connect: { id: randomUniqueID } }, quantity: Math.floor(Math.random() * 999) },
+        create: { cart: { connect: { id: 1 } }, product: { connect: { id: randomUniqueID } }, quantity: Math.floor(Math.random() * 999) },
+        where: { productItem: { productId: randomUniqueID, cartId: 1 } },
+        include: { cart: { include: { cartItems: true } } },
+      });
 
-    console.log(result);
+      console.log(result);
+    }
+
     console.log("Successfully seeded database. Closing connection.");
   });
 }

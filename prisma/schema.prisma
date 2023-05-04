@@ -17,20 +17,21 @@ model Category {
 }
 
 model Product {
-  id            Int              @id @default(autoincrement())
-  name          String           @db.VarChar(255)
-  slug          String           @unique @db.VarChar(255)
-  image         String           @db.VarChar(255)
-  price         Int
-  ingredients   String?          @db.Text
-  categoryId    Int
-  category      Category         @relation(fields: [categoryId], references: [id])
-  tags          TagsOnProducts[]
-  reviews       Review[]
-  likes         ProductLikes[]
-  cartItems     CartItem[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id          Int              @id @default(autoincrement())
+  name        String           @db.VarChar(255)
+  slug        String           @unique @db.VarChar(255)
+  image       String           @db.VarChar(255)
+  price       Int
+  ingredients String?          @db.Text
+  categoryId  Int
+  category    Category         @relation(fields: [categoryId], references: [id])
+  tags        TagsOnProducts[]
+  reviews     Review[]
+  likes       ProductLikes[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model Tag {
@@ -53,17 +54,20 @@ model TagsOnProducts {
 }
 
 model User {
-  id          Int            @id @default(autoincrement())
-  email       String         @unique
-  phoneNumber String         @unique
-  name        String         @db.VarChar(255)
-  password    String
-  avatar      String         @db.VarChar(255)
-  reviews     Review[]
-  likes       ProductLikes[]
-  cart        Cart?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  phoneNumber  String         @unique
+  name         String         @db.VarChar(255)
+  password     String
+  avatar       String         @db.VarChar(255)
+  reviews      Review[]
+  likes        ProductLikes[]
+  cart         Cart?
+  orderRecords OrderRecord[]
+  shipments    Shipment[]
+  receipts     Receipt[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model Review {
@@ -112,4 +116,60 @@ model CartItem {
   updatedAt DateTime @updatedAt
 
   @@unique([productId, cartId], name: "productItem")
+}
+
+model OrderItem {
+  id          Int         @id @default(autoincrement())
+  product     Product     @relation(fields: [productId], references: [id])
+  productId   Int
+  quantity    Int
+  createdAt   DateTime    @default(now())
+  orderRecord OrderRecord @relation(fields: [orderId], references: [id])
+  orderId     Int
+}
+
+model OrderRecord {
+  id         Int         @id @default(autoincrement())
+  user       User        @relation(fields: [userId], references: [id])
+  userId     Int
+  payment    Payment     @relation(fields: [paymentId], references: [id])
+  paymentId  Int         @unique
+  shipment   Shipment    @relation(fields: [shipmentId], references: [id])
+  shipmentId Int         @unique
+  orderItems OrderItem[]
+  receipt    Receipt?
+  status     String      @default("pending")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Receipt {
+  id          Int         @id @default(autoincrement())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int
+  orderRecord OrderRecord @relation(fields: [orderId], references: [id])
+  orderId     Int         @unique
+  totalAmount Int
+  createdAt   DateTime    @default(now())
+}
+
+model Payment {
+  id          Int          @id @default(autoincrement())
+  orderRecord OrderRecord?
+  method      String
+  amount      Int
+  createdAt   DateTime     @default(now())
+}
+
+model Shipment {
+  id          Int          @id @default(autoincrement())
+  user        User         @relation(fields: [userId], references: [id])
+  userId      Int
+  orderRecord OrderRecord?
+  address     String
+  city        String
+  state       String
+  country     String
+  zipCode     String
+  createdAt   DateTime     @default(now())
 }

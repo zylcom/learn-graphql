@@ -30,6 +30,7 @@ const resolvers = {
     getUser: userResolvers.getUser,
   },
   Mutation: {
+    checkoutOrder: productResolvers.checkoutOrder,
     createReview: productResolvers.createReview,
     likeProduct: productResolvers.likeProduct,
     neutralizeLikeProduct: productResolvers.neutralizeLikeProduct,
