@@ -76,11 +76,14 @@ const productType = `#graphql
     phone: String!, 
     name: String!, 
     detail: String!
+    deliverCost: Int!
+    order: Order
   }
 
   type Receipt {
     id: ID!
     orderId: ID!
+    order: Order
     orderItems: [Item]!
     createdAt: Datetime
   }

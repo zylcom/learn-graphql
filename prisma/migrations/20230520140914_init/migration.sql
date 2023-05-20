@@ -129,8 +129,6 @@ CREATE TABLE `OrderItem` (
 CREATE TABLE `OrderRecord` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
-    `paymentId` INTEGER NULL,
-    `shipmentId` INTEGER NULL,
     `checkoutSessionId` VARCHAR(191) NULL,
     `amountSubtotal` INTEGER NOT NULL,
     `amountTotal` INTEGER NOT NULL,
@@ -138,8 +136,6 @@ CREATE TABLE `OrderRecord` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `OrderRecord_paymentId_key`(`paymentId`),
-    UNIQUE INDEX `OrderRecord_shipmentId_key`(`shipmentId`),
     UNIQUE INDEX `OrderRecord_checkoutSessionId_key`(`checkoutSessionId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -169,11 +165,13 @@ CREATE TABLE `Receipt` (
 -- CreateTable
 CREATE TABLE `Payment` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `orderId` INTEGER NOT NULL,
     `method` VARCHAR(191) NOT NULL,
     `amount` INTEGER NOT NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'unpaid',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `Payment_orderId_key`(`orderId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -181,6 +179,7 @@ CREATE TABLE `Payment` (
 CREATE TABLE `Shipment` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
+    `orderId` INTEGER NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `city` VARCHAR(191) NOT NULL,
     `detail` VARCHAR(191) NOT NULL,
@@ -192,6 +191,7 @@ CREATE TABLE `Shipment` (
     `deliverCost` INTEGER NOT NULL DEFAULT 0,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `Shipment_orderId_key`(`orderId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -235,12 +235,6 @@ ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_orderId_fkey` FOREIGN KEY (`or
 ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_paymentId_fkey` FOREIGN KEY (`paymentId`) REFERENCES `Payment`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_shipmentId_fkey` FOREIGN KEY (`shipmentId`) REFERENCES `Shipment`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_checkoutSessionId_fkey` FOREIGN KEY (`checkoutSessionId`) REFERENCES `CheckoutSession`(`sessionId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -250,4 +244,10 @@ ALTER TABLE `Receipt` ADD CONSTRAINT `Receipt_userId_fkey` FOREIGN KEY (`userId`
 ALTER TABLE `Receipt` ADD CONSTRAINT `Receipt_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `OrderRecord`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Payment` ADD CONSTRAINT `Payment_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `OrderRecord`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Shipment` ADD CONSTRAINT `Shipment_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Shipment` ADD CONSTRAINT `Shipment_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `OrderRecord`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

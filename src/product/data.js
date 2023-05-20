@@ -447,7 +447,9 @@ async function getOrderById(_, { orderId }, context) {
       include: { checkoutSession: true, shipment: true, payment: true, orderItems: { include: { product: true } }, receipt: true },
     });
 
-    console.log(order);
+    const payments = await prisma.payment.findMany({ include: { orderRecord: true } });
+
+    console.log(payments);
 
     return { __typename: "Order", ...order };
   } catch (error) {
