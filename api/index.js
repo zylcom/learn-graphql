@@ -78,31 +78,33 @@ app.post(
               status: checkoutSessionCompleted.status,
               amountSubtotal: checkoutSessionCompleted.amount_subtotal,
               amountTotal: checkoutSessionCompleted.amount_total,
-              payment: {
-                create: {
-                  amount: checkoutSessionCompleted.amount_total,
-                  status: checkoutSessionCompleted.payment_status,
-                  method: checkoutSessionCompleted.payment_method_types[0],
-                },
-              },
-              receipt: {
-                create: {},
-              },
-              shipment: {
-                create: {
-                  address: checkoutSessionCompleted.customer_details.address.line1,
-                  city: checkoutSessionCompleted.customer_details.address.city,
-                  country: checkoutSessionCompleted.customer_details.address.country,
-                  zipCode: checkoutSessionCompleted.customer_details.address.postal_code,
-                  state: checkoutSessionCompleted.customer_details.address.state,
-                  detail: checkoutSessionCompleted.customer_details.address.line2,
-                  name: checkoutSessionCompleted.customer_details.name,
-                  phone: checkoutSessionCompleted.customer_details.phone,
-                  deliverCost: checkoutSessionCompleted.shipping_cost,
-                },
-              },
             },
           });
+
+          await prisma.payment.create({
+            data: {
+              amount: checkoutSessionCompleted.amount_total,
+              status: checkoutSessionCompleted.payment_status,
+              method: checkoutSessionCompleted.payment_method_types[0],
+              orderRecord: { connect: { id: order.id } },
+            },
+          });
+
+          await prisma.shipment.create({
+            data: {
+              address: checkoutSessionCompleted.customer_details.address.line1,
+              city: checkoutSessionCompleted.customer_details.address.city,
+              country: checkoutSessionCompleted.customer_details.address.country,
+              zipCode: checkoutSessionCompleted.customer_details.address.postal_code,
+              state: checkoutSessionCompleted.customer_details.address.state,
+              detail: checkoutSessionCompleted.customer_details.address.line2,
+              name: checkoutSessionCompleted.customer_details.name,
+              phone: checkoutSessionCompleted.customer_details.phone,
+              deliverCost: checkoutSessionCompleted.shipping_cost.amount_total,
+            },
+          });
+
+          await prisma.receipt.create({ data: { user: { connect: { id: +checkoutSessionCompleted.client_reference_id } } } });
 
           await prisma.cart.update({ where: { id: order.userId }, data: { cartItems: { deleteMany: {} } } });
 
