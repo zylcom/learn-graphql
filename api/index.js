@@ -106,7 +106,12 @@ app.post(
             },
           });
 
-          await prisma.receipt.create({ data: { user: { connect: { id: +checkoutSessionCompleted.client_reference_id } } } });
+          await prisma.receipt.create({
+            data: {
+              user: { connect: { id: +checkoutSessionCompleted.client_reference_id } },
+              orderRecord: { connect: { id: order.id } },
+            },
+          });
 
           await prisma.cart.update({ where: { id: order.userId }, data: { cartItems: { deleteMany: {} } } });
 
