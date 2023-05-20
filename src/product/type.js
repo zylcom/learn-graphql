@@ -51,12 +51,55 @@ const productType = `#graphql
     likesCount: Int
   }
 
+  type Order {
+    id: ID!
+    user: User
+    amountTotal: Int!
+    amountSubtotal: Int!
+    orderItems: [Item]!
+    status: String!
+    receipt: Receipt
+    payment: Payment
+    shipment: Shipment
+    checkoutSession: CheckoutSession
+    createdAt: Datetime
+    updatedAt: Datetime
+  }
+
+  type Shipment {
+    id: ID!
+    address: String!,
+    city: String!, 
+    state: String!, 
+    country: String!, 
+    zipCode: String!, 
+    phone: String!, 
+    name: String!, 
+    detail: String!
+  }
+
   type Receipt {
     id: ID!
     orderId: ID!
-    totalAmount: Int!
     orderItems: [Item]!
     createdAt: Datetime
+  }
+
+  type Payment {
+    id: ID!
+    amount: Int!
+    method: String!
+    status: String!
+    order: Order
+    createdAt: Datetime
+  }
+
+  type CheckoutSession {
+    id: ID!
+    sessionId: String!
+    orderId: ID!
+    url: String!
+    expiresAt: Datetime
   }
 
   type Review {
@@ -140,6 +183,10 @@ const productType = `#graphql
     message: String!
   }
 
+  type OrderError implements BaseError {
+    message: String!
+  }
+
   union BestRatedProductResult = BestRatedProductList | ProductError
   union ProductResult = Product | ProductError
   union ProductListResult = ProductList | ProductError
@@ -149,7 +196,8 @@ const productType = `#graphql
   union UpdateReviewResult = Review | FailUpdateReview
   union LikeProductResult = Like | FailLikeProduct
   union NeutralizeLikeProductResult = Like | FailNeutralizeLikeProduct
-  union CheckoutResult = Receipt | CheckoutError
+  union CheckoutResult = CheckoutSession | CheckoutError
+  union OrderResult = Order | OrderError
   
   type Query {
     getAllProductCategory: CategoryListResult
@@ -160,6 +208,7 @@ const productType = `#graphql
     getBestRatedProducts(category: String): BestRatedProductResult
     getProduct(slug: String!): ProductResult
     getTagsByCategory(category: String!): TagListResult
+    getOrderById(orderId: Int!): OrderResult
   }
 
   type Mutation {

@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { calculateTotalPrice, verifyToken } from "../utils/index.js";
 
@@ -297,41 +298,107 @@ async function neutralizeLikeProduct(_, { productId }, context) {
 }
 
 async function checkoutOrder(_, {}, context) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const decodedToken = verifyToken(context.token);
 
   if (decodedToken.error) {
     return { __typename: "CheckoutError", message: decodedToken.error.message };
   }
 
-  const user = await prisma.user.findUnique({ where: { id: decodedToken.data.id }, include: { cart: true } });
+  const user = await prisma.user.findUnique({ where: { id: decodedToken.data.id }, include: { cart: { include: { cartItems: { include: { product: true } } } } } });
 
   if (!user) {
     return { __typename: "CheckoutError", message: "Unauthorized!" };
   }
 
   try {
-    const cartItems = await prisma.cartItem.findMany({ where: { cartId: user.cart.id }, include: { product: true } });
+    const cartItems = user.cart.cartItems;
 
     if (cartItems.length < 1) {
       throw new Error("There no items to checkout.");
     }
 
-    const totalAmount = calculateTotalPrice(cartItems);
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      currency: "usd",
+      customer_email: user.email,
+      line_items: cartItems.map((item) => {
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.product.name,
+              description: item.product.description,
+              images: [`https://picsum.photos/1920/1280.webp?random=${item.productId}`],
+            },
+            unit_amount: item.product.price,
+          },
+          quantity: item.quantity,
+        };
+      }),
+      mode: "payment",
+      success_url: "http://localhost:5173/checkout-success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "http://localhost:5173/cart",
+      client_reference_id: user.id + "",
+      phone_number_collection: { enabled: true },
+      shipping_address_collection: {
+        allowed_countries: ["ID"],
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 0,
+              currency: "usd",
+            },
+            display_name: "Free shipping (faster when on low demand)",
+            delivery_estimate: {
+              minimum: {
+                unit: "hour",
+                value: 2,
+              },
+            },
+          },
+        },
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 1500,
+              currency: "usd",
+            },
+            display_name: "Hunngry Up (always fast even on high demand)",
+            delivery_estimate: {
+              minimum: {
+                unit: "hour",
+                value: 1,
+              },
+            },
+          },
+        },
+      ],
+      custom_text: {
+        shipping_address: {
+          message: "Fill address line 2 field with your house detail (number/color/position)",
+        },
+      },
+    });
+
+    // console.log(session);
+
+    const amountSubtotal = calculateTotalPrice(cartItems);
 
     const order = await prisma.orderRecord.create({
       data: {
-        status: "success",
-        receipt: { create: { totalAmount, user: { connect: { id: user.id } } } },
         user: { connect: { id: user.id } },
-        payment: { create: { amount: totalAmount, method: "DANA" } },
-        shipment: {
+        amountSubtotal,
+        amountTotal: amountSubtotal,
+        checkoutSession: {
           create: {
-            address: "Bojong Raya RT001/004",
-            city: "Jakarta Barat",
-            state: "DKI Jakarta",
-            country: "Indonesia",
-            zipCode: "11740",
-            user: { connect: { id: user.id } },
+            sessionId: session.id,
+            url: session.url,
+            expiresAt: session.expires_at,
           },
         },
         orderItems: {
@@ -346,15 +413,47 @@ async function checkoutOrder(_, {}, context) {
         orderItems: { include: { product: true } },
         shipment: true,
         receipt: true,
+        payment: true,
+        checkoutSession: true,
       },
     });
 
-    await prisma.cart.update({ where: { id: user.cart.id }, data: { cartItems: { deleteMany: {} } } });
+    // console.log(order);
 
-    return { __typename: "Receipt", ...order.receipt, orderItems: order.orderItems };
+    return { __typename: "CheckoutSession", ...order.checkoutSession, orderId: order.id };
   } catch (error) {
     console.error(error);
+
     return { __typename: "CheckoutError", message: error.message };
+  }
+}
+
+async function getOrderById(_, { orderId }, context) {
+  const decodedToken = verifyToken(context.token);
+
+  if (decodedToken.error) {
+    return { __typename: "OrderError", message: decodedToken.error.message };
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: decodedToken.data.id } });
+
+  if (!user) {
+    return { __typename: "OrderError", message: "Unauthorized!" };
+  }
+
+  try {
+    const order = await prisma.orderRecord.findUnique({
+      where: { id: orderId },
+      include: { checkoutSession: true, shipment: true, payment: true, orderItems: { include: { product: true } }, receipt: true },
+    });
+
+    console.log(order);
+
+    return { __typename: "Order", ...order };
+  } catch (error) {
+    console.error(error);
+
+    return { __typename: "OrderError", message: error.message };
   }
 }
 
@@ -365,6 +464,7 @@ export default {
   getAllProductTag,
   getFilteredProducts,
   getBestRatedProducts,
+  getOrderById,
   getProduct,
   getProductReviews,
   getTagsByCategory,

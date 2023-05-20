@@ -21,6 +21,7 @@ const resolvers = {
     getTagsByCategory: productResolvers.getTagsByCategory,
     getAllProductTag: productResolvers.getAllProductTag,
     getBestRatedProducts: productResolvers.getBestRatedProducts,
+    getOrderById: productResolvers.getOrderById,
     getProduct: productResolvers.getProduct,
     getProductReviews: productResolvers.getProductReviews,
     authenticate: userResolvers.authenticate,

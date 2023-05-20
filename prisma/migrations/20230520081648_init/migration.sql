@@ -17,6 +17,7 @@ CREATE TABLE `Product` (
     `slug` VARCHAR(255) NOT NULL,
     `image` VARCHAR(255) NOT NULL,
     `price` INTEGER NOT NULL,
+    `description` TEXT NULL,
     `ingredients` TEXT NULL,
     `categoryId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -128,14 +129,29 @@ CREATE TABLE `OrderItem` (
 CREATE TABLE `OrderRecord` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
-    `paymentId` INTEGER NOT NULL,
-    `shipmentId` INTEGER NOT NULL,
-    `status` VARCHAR(191) NOT NULL DEFAULT 'pending',
+    `paymentId` INTEGER NULL,
+    `shipmentId` INTEGER NULL,
+    `checkoutSessionId` VARCHAR(191) NULL,
+    `amountSubtotal` INTEGER NOT NULL,
+    `amountTotal` INTEGER NOT NULL,
+    `status` VARCHAR(191) NOT NULL DEFAULT 'uncomplete',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `OrderRecord_paymentId_key`(`paymentId`),
     UNIQUE INDEX `OrderRecord_shipmentId_key`(`shipmentId`),
+    UNIQUE INDEX `OrderRecord_checkoutSessionId_key`(`checkoutSessionId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `CheckoutSession` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `sessionId` VARCHAR(255) NOT NULL,
+    `url` LONGTEXT NOT NULL,
+    `expiresAt` INTEGER NOT NULL,
+
+    UNIQUE INDEX `CheckoutSession_sessionId_key`(`sessionId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -144,7 +160,6 @@ CREATE TABLE `Receipt` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
     `orderId` INTEGER NOT NULL,
-    `totalAmount` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `Receipt_orderId_key`(`orderId`),
@@ -156,6 +171,7 @@ CREATE TABLE `Payment` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `method` VARCHAR(191) NOT NULL,
     `amount` INTEGER NOT NULL,
+    `status` VARCHAR(191) NOT NULL DEFAULT 'unpaid',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -167,9 +183,14 @@ CREATE TABLE `Shipment` (
     `userId` INTEGER NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `city` VARCHAR(191) NOT NULL,
-    `state` VARCHAR(191) NOT NULL,
+    `detail` VARCHAR(191) NOT NULL,
+    `state` VARCHAR(191) NULL,
+    `province` VARCHAR(191) NULL,
     `country` VARCHAR(191) NOT NULL,
     `zipCode` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `deliverCost` INTEGER NOT NULL DEFAULT 0,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -215,10 +236,13 @@ ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_orderId_fkey` FOREIGN KEY (`or
 ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_paymentId_fkey` FOREIGN KEY (`paymentId`) REFERENCES `Payment`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_paymentId_fkey` FOREIGN KEY (`paymentId`) REFERENCES `Payment`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_shipmentId_fkey` FOREIGN KEY (`shipmentId`) REFERENCES `Shipment`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_shipmentId_fkey` FOREIGN KEY (`shipmentId`) REFERENCES `Shipment`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `OrderRecord` ADD CONSTRAINT `OrderRecord_checkoutSessionId_fkey` FOREIGN KEY (`checkoutSessionId`) REFERENCES `CheckoutSession`(`sessionId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Receipt` ADD CONSTRAINT `Receipt_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

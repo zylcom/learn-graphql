@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.0",
     "libphonenumber-js": "^1.10.21",
     "prisma": "^4.4.0",
+    "stripe": "^12.5.0",
     "validator": "^13.9.0"
   },
   "devDependencies": {

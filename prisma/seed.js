@@ -49,6 +49,7 @@ const products = [
     price: 10000,
     image: "cappuccino.jpg",
     ingredients: "Coffee, milk.",
+    description: "It's cool and refreshing.",
     category: { connect: { id: 2 } },
     tags: {
       create: [{ tag: { connect: { id: 1 } } }, { tag: { connect: { id: 4 } } }],
@@ -67,6 +68,7 @@ const products = [
     image: "fried-egg.jpg",
     ingredients: "Egg.",
     category: { connect: { id: 1 } },
+    description: "Sunny-side up.",
     tags: {
       create: [{ tag: { connect: { id: 7 } } }],
     },
@@ -84,6 +86,7 @@ const products = [
     image: "omelet.jpg",
     ingredients: "Egg, milk",
     category: { connect: { id: 1 } },
+    description: "It's super fluffy.",
     tags: {
       create: [{ tag: { connect: { id: 7 } } }],
     },
@@ -101,6 +104,7 @@ const products = [
     image: "salad.jpg",
     ingredients: "Leek, dandelion, vinegar.",
     category: { connect: { id: 1 } },
+    description: "A healthy garden salad.",
     tags: {
       create: [{ tag: { connect: { id: 8 } } }],
     },
@@ -118,6 +122,7 @@ const products = [
     image: "cheese-cauliflower.jpg",
     ingredients: "Cauliflower, cheese.",
     category: { connect: { id: 1 } },
+    description: "It smells great!",
     tags: {
       create: [{ tag: { connect: { id: 9 } } }],
     },
@@ -135,6 +140,7 @@ const products = [
     image: "baked-fish.jpg",
     ingredients: "Sunfish, bream fish, wheat flour.",
     category: { connect: { id: 1 } },
+    description: "Baked fish on a bed of herbs.",
     tags: {
       create: [{ tag: { connect: { id: 10 } } }],
     },
@@ -152,6 +158,7 @@ const products = [
     image: "parsnip-soup.jpg",
     ingredients: "Parsnip, milk, vinegar.",
     category: { connect: { id: 1 } },
+    description: "It's fresh and hearty.",
     tags: {
       create: [{ tag: { connect: { id: 11 } } }],
     },
@@ -169,6 +176,7 @@ const products = [
     image: "vegetable-medley.jpg",
     ingredients: "Tomato, beet.",
     category: { connect: { id: 1 } },
+    description: "This is very nutritious.",
     tags: {
       create: [{ tag: { connect: { id: 12 } } }],
     },
@@ -186,6 +194,7 @@ const products = [
     image: "complete-breakfast.jpg",
     ingredients: "Fried egg, milk, hashbrowns.",
     category: { connect: { id: 1 } },
+    description: "You'll feel ready to take on the world!",
     tags: {
       create: [{ tag: { connect: { id: 7 } } }],
     },
@@ -203,6 +212,7 @@ const products = [
     image: "fried-calamari.jpg",
     ingredients: "Squid, wheat flour, oil.",
     category: { connect: { id: 1 } },
+    description: "It's so chewy.",
     tags: {
       create: [{ tag: { connect: { id: 10 } } }],
     },
@@ -220,6 +230,7 @@ const products = [
     image: "strange-bun.jpg",
     ingredients: "Wheat flour, periwinkle, void mayonnaise.",
     category: { connect: { id: 1 } },
+    description: "What's inside?",
     tags: {
       create: [{ tag: { connect: { id: 13 } } }],
     },
@@ -237,6 +248,7 @@ const products = [
     image: "fried-mushroom.jpg",
     ingredients: "Common mushroom, morel, oil.",
     category: { connect: { id: 1 } },
+    description: "Earthy and aromatic.",
     tags: {
       create: [{ tag: { connect: { id: 14 } } }],
     },
@@ -254,6 +266,7 @@ const products = [
     image: "pizza.jpg",
     ingredients: "Wheat flour, tomato, cheese.",
     category: { connect: { id: 1 } },
+    description: "It's popular for all the right reasons.",
     tags: {
       create: [{ tag: { connect: { id: 15 } } }],
     },
@@ -271,6 +284,7 @@ const products = [
     image: "bean-hotpot.jpg",
     ingredients: "Green bean.",
     category: { connect: { id: 1 } },
+    description: "It sure is healthy.",
     tags: {
       create: [{ tag: { connect: { id: 16 } } }],
     },
@@ -288,6 +302,7 @@ const products = [
     image: "glazed-yams.jpg",
     ingredients: "Yam, sugar.",
     category: { connect: { id: 1 } },
+    description: "Sweet and satisfying... The sugar gives it a hint of caramel.",
     tags: {
       create: [{ tag: { connect: { id: 17 } } }],
     },
@@ -305,6 +320,7 @@ const products = [
     image: "carp-surprise.jpg",
     ingredients: "Carp.",
     category: { connect: { id: 1 } },
+    description: "It's bland and oily.",
     tags: {
       create: [{ tag: { connect: { id: 10 } } }],
     },
@@ -322,6 +338,7 @@ const products = [
     image: "hashbrowns.jpg",
     ingredients: "Potato, oil.",
     category: { connect: { id: 1 } },
+    description: "Crispy and golden-brown!",
     tags: {
       create: [{ tag: { connect: { id: 18 } } }],
     },
@@ -339,6 +356,7 @@ const products = [
     image: "pancakes.jpg",
     ingredients: "Wheat flour, egg.",
     category: { connect: { id: 1 } },
+    description: "A double stack of fluffy, soft pancakes.",
     tags: {
       create: [{ tag: { connect: { id: 13 } } }],
     },
@@ -356,6 +374,7 @@ const products = [
     image: "salmon-dinner.jpg",
     ingredients: "Salmon, amaranth, kale.",
     category: { connect: { id: 1 } },
+    description: "The lemon spritz makes it special.",
     tags: {
       create: [{ tag: { connect: { id: 10 } } }],
     },
@@ -373,6 +392,7 @@ const products = [
     image: "fish-taco.jpg",
     ingredients: "Tuna, tortilla, red cabbage, mayonnaise.",
     category: { connect: { id: 1 } },
+    description: "It smells delicious.",
     tags: {
       create: [{ tag: { connect: { id: 10 } } }],
     },
@@ -390,6 +410,7 @@ const products = [
     image: "crispy-bass.jpg",
     ingredients: "Largemouth bass, wheat flour, oil.",
     category: { connect: { id: 1 } },
+    description: "Wow, the breading is perfect.",
     tags: {
       create: [{ tag: { connect: { id: 10 } } }],
     },
@@ -407,6 +428,7 @@ const products = [
     image: "pepper-poppers.jpg",
     ingredients: "Hot pepper, cheese.",
     category: { connect: { id: 1 } },
+    description: "Spicy breaded peppers filled with cheese.",
     tags: {
       create: [{ tag: { connect: { id: 9 } } }],
     },
@@ -424,6 +446,7 @@ const products = [
     image: "bread.jpg",
     ingredients: "Wheat flour.",
     category: { connect: { id: 1 } },
+    description: "A crusty baguette.",
     tags: {
       create: [{ tag: { connect: { id: 19 } } }],
     },
@@ -441,6 +464,7 @@ const products = [
     image: "tom-kha-soup.jpg",
     ingredients: "Coconut, shrimp, common mushroom.",
     category: { connect: { id: 1 } },
+    description: "These flavors are incredible!",
     tags: {
       create: [{ tag: { connect: { id: 11 } } }],
     },
@@ -458,6 +482,7 @@ const products = [
     image: "chocolate-cake.jpg",
     ingredients: "Wheat flour, egg, sugar, cocoa powder.",
     category: { connect: { id: 1 } },
+    description: "Rich and moist with a thick fudge icing.",
     tags: {
       create: [{ tag: { connect: { id: 13 } } }],
     },
@@ -475,6 +500,7 @@ const products = [
     image: "pink-cake.jpg",
     ingredients: "Melon, wheat flour, sugar, egg.",
     category: { connect: { id: 1 } },
+    description: "There's little heart candies on top.",
     tags: {
       create: [{ tag: { connect: { id: 13 } } }],
     },
@@ -492,6 +518,7 @@ const products = [
     image: "rhubarb-pie.jpg",
     ingredients: "Rhubarb, wheat flour, sugar.",
     category: { connect: { id: 1 } },
+    description: "Mmm, tangy and sweet!",
     tags: {
       create: [{ tag: { connect: { id: 20 } } }],
     },
@@ -509,6 +536,7 @@ const products = [
     image: "cookie.jpg",
     ingredients: "Wheat flour, sugar, egg.",
     category: { connect: { id: 1 } },
+    description: "Very chewy.",
     tags: {
       create: [{ tag: { connect: { id: 13 } } }],
     },
@@ -526,6 +554,7 @@ const products = [
     image: "spaghetti.jpg",
     ingredients: "Wheat flour, tomato.",
     category: { connect: { id: 1 } },
+    description: "An old favorite.",
     tags: {
       create: [{ tag: { connect: { id: 21 } } }],
     },
@@ -543,6 +572,7 @@ const products = [
     image: "fried-eel.jpg",
     ingredients: "Ell, oil.",
     category: { connect: { id: 1 } },
+    description: "Greasy but flavorful.",
     tags: {
       create: [{ tag: { connect: { id: 22 } } }],
     },
@@ -560,6 +590,7 @@ const products = [
     image: "spicy-eel.jpg",
     ingredients: "Eel, hot pepper, oil.",
     category: { connect: { id: 1 } },
+    description: "It's really spicy! Be careful.",
     tags: {
       create: [{ tag: { connect: { id: 22 } } }],
     },
@@ -577,6 +608,7 @@ const products = [
     image: "red-plate.jpg",
     ingredients: "Red cabbage, radish.",
     category: { connect: { id: 1 } },
+    description: "Full of antioxidants.",
     tags: {
       create: [{ tag: { connect: { id: 12 } } }],
     },
@@ -594,6 +626,7 @@ const products = [
     image: "eggplant-parmesan.jpg",
     ingredients: "Eggplant, tomato.",
     category: { connect: { id: 1 } },
+    description: "Tangy, cheesy, and wonderful.",
     tags: {
       create: [{ tag: { connect: { id: 12 } } }],
     },
@@ -611,6 +644,7 @@ const products = [
     image: "rice-pudding.jpg",
     ingredients: "Milk, sugar, rice.",
     category: { connect: { id: 1 } },
+    description: "It's creamy, sweet, and fun to eat.",
     tags: {
       create: [{ tag: { connect: { id: 23 } } }],
     },
@@ -628,6 +662,7 @@ const products = [
     image: "survival-burger.jpg",
     ingredients: "Bread, cave carrot, eggplant.",
     category: { connect: { id: 1 } },
+    description: "A convenient snack for the explorer.",
     tags: {
       create: [{ tag: { connect: { id: 24 } } }],
     },
@@ -645,6 +680,7 @@ const products = [
     image: "pumpkin-soup.jpg",
     ingredients: "Pumpkin, milk.",
     category: { connect: { id: 1 } },
+    description: "A seasonal favorite.",
     tags: {
       create: [{ tag: { connect: { id: 11 } } }],
     },
@@ -662,6 +698,7 @@ const products = [
     image: "trout-soup.jpg",
     ingredients: "Rainbow trout, green algae.",
     category: { connect: { id: 1 } },
+    description: "Pretty salty.",
     tags: {
       create: [{ tag: { connect: { id: 11 } } }],
     },
@@ -679,6 +716,7 @@ const products = [
     image: "algae-soup.jpg",
     ingredients: "Green algae.",
     category: { connect: { id: 1 } },
+    description: "It's a little slimy.",
     tags: {
       create: [{ tag: { connect: { id: 11 } } }],
     },
@@ -696,6 +734,7 @@ const products = [
     image: "plum-pudding.jpg",
     ingredients: "Wild plum, wheat flour, sugar.",
     category: { connect: { id: 1 } },
+    description: "A traditional holiday treat.",
     tags: {
       create: [{ tag: { connect: { id: 23 } } }],
     },
@@ -713,6 +752,7 @@ const products = [
     image: "pumpkin-pie.jpg",
     ingredients: "",
     category: { connect: { id: 1 } },
+    description: "Silky pumpkin cream in a flakey crust.",
     tags: {
       create: [{ tag: { connect: { id: 20 } } }],
     },
@@ -730,6 +770,7 @@ const products = [
     image: "radish-salad.jpg",
     ingredients: "Oil, vinegar, radish.",
     category: { connect: { id: 1 } },
+    description: "The radishes are so crisp!",
     tags: {
       create: [{ tag: { connect: { id: 8 } } }],
     },
@@ -747,6 +788,7 @@ const products = [
     image: "seafoam-pudding.jpg",
     ingredients: "Flounder, midnight carp, squid ink.",
     category: { connect: { id: 1 } },
+    description: "This briny pudding will really get you into the maritime mindset!",
     tags: {
       create: [{ tag: { connect: { id: 23 } } }],
     },
@@ -764,6 +806,7 @@ const products = [
     image: "fruit-salad.jpg",
     ingredients: "Blueberry, melon, apricot.",
     category: { connect: { id: 1 } },
+    description: "A delicious combination of summer fruits.",
     tags: {
       create: [{ tag: { connect: { id: 8 } } }],
     },
@@ -781,6 +824,7 @@ const products = [
     image: "fiddlehead-risotto.jpg",
     ingredients: "Oil, fiddlehead fern, garlic.",
     category: { connect: { id: 1 } },
+    description: "A creamy rice dish served with sauteed fern heads. It's a little bland.",
     tags: {
       create: [{ tag: { connect: { id: 12 } } }],
     },
@@ -798,6 +842,7 @@ const products = [
     image: "triple-shot-espresso.jpg",
     ingredients: "Coffee",
     category: { connect: { id: 2 } },
+    description: "It's more potent than regular coffee!",
     tags: {
       create: [{ tag: { connect: { id: 1 } } }],
     },
@@ -815,6 +860,7 @@ const products = [
     image: "shrimp-cocktail.jpg",
     ingredients: "Tomato, shrimp, wild horseradish.",
     category: { connect: { id: 2 } },
+    description: "A sumptuous appetizer made with freshly-caught shrimp.",
     tags: {
       create: [{ tag: { connect: { id: 6 } } }],
     },
@@ -832,6 +878,7 @@ const products = [
     image: "ginger-ale.jpg",
     ingredients: "Ginger, sugar.",
     category: { connect: { id: 2 } },
+    description: "A zesty soda known for its soothing effect on the stomach.",
     tags: {
       create: [{ tag: { connect: { id: 25 } } }],
     },
@@ -849,6 +896,7 @@ const products = [
     image: "wine.jpg",
     ingredients: "Grape.",
     category: { connect: { id: 2 } },
+    description: "Drink in moderation.",
     tags: {
       create: [{ tag: { connect: { id: 26 } } }],
     },
@@ -904,41 +952,45 @@ async function main() {
     console.log(result);
   });
 
-  Promise.all([categoryCount, tagCount]).then(async (values) => {
-    console.log(values);
+  Promise.all([categoryCount, tagCount])
+    .then(async (values) => {
+      console.log(values);
 
-    products.map(async (product) => {
-      const result = await prisma.product.create({
-        data: {
-          name: product.name,
-          slug: product.slug,
-          image: product.image,
-          price: product.price,
-          ingredients: product.ingredients,
-          category: product.category,
-          tags: product.tags,
-          reviews: product.reviews,
-          likes: product.likes,
-        },
-      });
-
+      return await Promise.all(
+        products.map(async (product) => {
+          return await prisma.product.create({
+            data: {
+              name: product.name,
+              slug: product.slug,
+              image: product.image,
+              price: product.price,
+              ingredients: product.ingredients,
+              description: product.description,
+              category: product.category,
+              tags: product.tags,
+              reviews: product.reviews,
+              likes: product.likes,
+            },
+          });
+        })
+      );
+    })
+    .then(async (result) => {
       console.log(result);
+
+      for (let index = 0; index < Math.floor(Math.random() * 48); index++) {
+        const randomUniqueID = generateUniqueRandomId(48);
+        const result = await prisma.cartItem.upsert({
+          update: { cart: { connect: { id: 1 } }, product: { connect: { id: randomUniqueID } }, quantity: Math.floor(Math.random() * 999) },
+          create: { cart: { connect: { id: 1 } }, product: { connect: { id: randomUniqueID } }, quantity: Math.floor(Math.random() * 999) },
+          where: { productItem: { productId: randomUniqueID, cartId: 1 } },
+          include: { cart: { include: { cartItems: true } } },
+        });
+
+        console.log(result);
+      }
+      console.log("Successfully seeded database. Closing connection.");
     });
-
-    for (let index = 0; index < Math.floor(Math.random() * 48); index++) {
-      const randomUniqueID = generateUniqueRandomId(48);
-      const result = await prisma.cartItem.upsert({
-        update: { cart: { connect: { id: 1 } }, product: { connect: { id: randomUniqueID } }, quantity: Math.floor(Math.random() * 999) },
-        create: { cart: { connect: { id: 1 } }, product: { connect: { id: randomUniqueID } }, quantity: Math.floor(Math.random() * 999) },
-        where: { productItem: { productId: randomUniqueID, cartId: 1 } },
-        include: { cart: { include: { cartItems: true } } },
-      });
-
-      console.log(result);
-    }
-
-    console.log("Successfully seeded database. Closing connection.");
-  });
 }
 
 main()

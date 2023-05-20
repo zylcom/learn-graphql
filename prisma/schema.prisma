@@ -22,6 +22,7 @@ model Product {
   slug        String           @unique @db.VarChar(255)
   image       String           @db.VarChar(255)
   price       Int
+  description String?          @db.Text
   ingredients String?          @db.Text
   categoryId  Int
   category    Category         @relation(fields: [categoryId], references: [id])
@@ -129,18 +130,30 @@ model OrderItem {
 }
 
 model OrderRecord {
-  id         Int         @id @default(autoincrement())
-  user       User        @relation(fields: [userId], references: [id])
-  userId     Int
-  payment    Payment     @relation(fields: [paymentId], references: [id])
-  paymentId  Int         @unique
-  shipment   Shipment    @relation(fields: [shipmentId], references: [id])
-  shipmentId Int         @unique
-  orderItems OrderItem[]
-  receipt    Receipt?
-  status     String      @default("pending")
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id                Int              @id @default(autoincrement())
+  user              User             @relation(fields: [userId], references: [id])
+  userId            Int
+  payment           Payment?         @relation(fields: [paymentId], references: [id])
+  paymentId         Int?             @unique
+  shipment          Shipment?        @relation(fields: [shipmentId], references: [id])
+  shipmentId        Int?             @unique
+  checkoutSession   CheckoutSession? @relation(fields: [checkoutSessionId], references: [sessionId])
+  checkoutSessionId String?          @unique
+  orderItems        OrderItem[]
+  receipt           Receipt?
+  amountSubtotal    Int
+  amountTotal       Int
+  status            String           @default("uncomplete")
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model CheckoutSession {
+  id        Int          @id @default(autoincrement())
+  sessionId String       @unique @db.VarChar(255)
+  order     OrderRecord?
+  url       String       @db.LongText
+  expiresAt Int
 }
 
 model Receipt {
@@ -149,7 +162,6 @@ model Receipt {
   userId      Int
   orderRecord OrderRecord @relation(fields: [orderId], references: [id])
   orderId     Int         @unique
-  totalAmount Int
   createdAt   DateTime    @default(now())
 }
 
@@ -158,6 +170,7 @@ model Payment {
   orderRecord OrderRecord?
   method      String
   amount      Int
+  status      String       @default("unpaid")
   createdAt   DateTime     @default(now())
 }
 
@@ -168,8 +181,13 @@ model Shipment {
   orderRecord OrderRecord?
   address     String
   city        String
-  state       String
+  detail      String
+  state       String?
+  province    String?
   country     String
   zipCode     String
+  name        String
+  phone       String
+  deliverCost Int          @default(0)
   createdAt   DateTime     @default(now())
 }
