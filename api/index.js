@@ -71,42 +71,46 @@ app.post(
       case "checkout.session.completed":
         const checkoutSessionCompleted = event.data.object;
 
-        const order = await prisma.orderRecord.update({
-          where: { checkoutSessionId: "cs_test_b1de7nF6zJimiK7TRPIOjpDJLg69dR44xzMCb1JSu2lvF0pb8CSfRLDKJ9" },
-          data: {
-            status: checkoutSessionCompleted.status,
-            amountSubtotal: checkoutSessionCompleted.amount_subtotal,
-            amountTotal: checkoutSessionCompleted.amount_total,
-            payment: {
-              create: {
-                amount: checkoutSessionCompleted.amount_total,
-                status: checkoutSessionCompleted.payment_status,
-                method: checkoutSessionCompleted.payment_method_types[0],
+        try {
+          const order = await prisma.orderRecord.update({
+            where: { checkoutSessionId: checkoutSessionCompleted.id },
+            data: {
+              status: checkoutSessionCompleted.status,
+              amountSubtotal: checkoutSessionCompleted.amount_subtotal,
+              amountTotal: checkoutSessionCompleted.amount_total,
+              payment: {
+                create: {
+                  amount: checkoutSessionCompleted.amount_total,
+                  status: checkoutSessionCompleted.payment_status,
+                  method: checkoutSessionCompleted.payment_method_types[0],
+                },
+              },
+              receipt: {
+                create: {},
+              },
+              shipment: {
+                create: {
+                  address: checkoutSessionCompleted.customer_details.address.line1,
+                  city: checkoutSessionCompleted.customer_details.address.city,
+                  country: checkoutSessionCompleted.customer_details.address.country,
+                  zipCode: checkoutSessionCompleted.customer_details.address.postal_code,
+                  state: checkoutSessionCompleted.customer_details.address.state,
+                  detail: checkoutSessionCompleted.customer_details.address.line2,
+                  name: checkoutSessionCompleted.customer_details.name,
+                  phone: checkoutSessionCompleted.customer_details.phone,
+                  deliverCost: checkoutSessionCompleted.shipping_cost,
+                },
               },
             },
-            receipt: {
-              create: {},
-            },
-            shipment: {
-              create: {
-                address: checkoutSessionCompleted.customer_details.address.line1,
-                city: checkoutSessionCompleted.customer_details.address.city,
-                country: checkoutSessionCompleted.customer_details.address.country,
-                zipCode: checkoutSessionCompleted.customer_details.address.postal_code,
-                state: checkoutSessionCompleted.customer_details.address.state,
-                province: checkoutSessionCompleted.customer_details.address.province,
-                detail: checkoutSessionCompleted.customer_details.address.line2,
-                name: checkoutSessionCompleted.customer_details.name,
-                phone: checkoutSessionCompleted.customer_details.phone,
-                deliverCost: checkoutSessionCompleted.shipping_cost,
-              },
-            },
-          },
-        });
+          });
 
-        await prisma.cart.update({ where: { id: order.userId }, data: { cartItems: { deleteMany: {} } } });
+          await prisma.cart.update({ where: { id: order.userId }, data: { cartItems: { deleteMany: {} } } });
 
-        console.log(checkoutSessionCompleted, "checkout.session.completed");
+          console.log(checkoutSessionCompleted, "checkout.session.completed");
+        } catch (error) {
+          console.log(error.message);
+        }
+
         break;
 
       case "checkout.session.expired":
