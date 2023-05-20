@@ -92,6 +92,7 @@ app.post(
 
           await prisma.shipment.create({
             data: {
+              user: { connect: { id: +checkoutSessionCompleted.client_reference_id } },
               address: checkoutSessionCompleted.customer_details.address.line1,
               city: checkoutSessionCompleted.customer_details.address.city,
               country: checkoutSessionCompleted.customer_details.address.country,
