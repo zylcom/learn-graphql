@@ -444,11 +444,22 @@ async function getOrderById(_, { orderId }, context) {
   try {
     const order = await prisma.orderRecord.findUnique({
       where: { id: orderId },
-      include: { checkoutSession: true, shipment: true, payment: true, orderItems: { include: { product: true } }, receipt: true },
+      include: {
+        checkoutSession: true,
+        shipment: true,
+        payment: true,
+        orderItems: { include: { product: true } },
+        receipt: true,
+        user: true,
+      },
     });
 
     if (!order) {
       throw new Error(`Order with id ${orderId} not found`);
+    }
+
+    if (order.user.id !== user.id) {
+      return { __typename: "OrderError", message: "Unauthorized!" };
     }
 
     return { __typename: "Order", ...order };
