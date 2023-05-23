@@ -297,7 +297,7 @@ async function neutralizeLikeProduct(_, { productId }, context) {
   }
 }
 
-async function checkoutOrder(_, {}, context) {
+async function checkoutOrder(_, { orderId }, context) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const decodedToken = verifyToken(context.token);
 
@@ -312,30 +312,10 @@ async function checkoutOrder(_, {}, context) {
   }
 
   try {
-    const cartItems = user.cart.cartItems;
-
-    if (cartItems.length < 1) {
-      throw new Error("There no items to checkout.");
-    }
-
-    const session = await stripe.checkout.sessions.create({
+    let stripeOptions = {
       payment_method_types: ["card"],
       currency: "usd",
       customer_email: user.email,
-      line_items: cartItems.map((item) => {
-        return {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: item.product.name,
-              description: item.product.description,
-              images: [`https://picsum.photos/1920/1280.webp?random=${item.productId}`],
-            },
-            unit_amount: item.product.price,
-          },
-          quantity: item.quantity,
-        };
-      }),
       mode: "payment",
       success_url: "http://localhost:5173/checkout-success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "http://localhost:5173/cart",
@@ -383,9 +363,90 @@ async function checkoutOrder(_, {}, context) {
           message: "Fill address line 2 field with your house detail (number/color/position)",
         },
       },
+    };
+
+    if (orderId) {
+      const order = await prisma.orderRecord.findUnique({
+        where: { id: orderId },
+        include: {
+          orderItems: { include: { product: true } },
+          shipment: true,
+          receipt: true,
+          payment: true,
+          checkoutSession: true,
+        },
+      });
+
+      if (!order) {
+        throw new Error("Order invalid");
+      }
+
+      if (Date.now() < order.checkoutSession.expiresAt) {
+        return { __typename: "CheckoutSession", ...order.checkoutSession, orderId: order.id };
+      }
+
+      stripeOptions.line_items = order.orderItems.map((item) => {
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.product.name,
+              description: item.product.description,
+              images: [`https://picsum.photos/1920/1280.webp?random=${item.productId}`],
+            },
+            unit_amount: item.product.price,
+          },
+          quantity: item.quantity,
+        };
+      });
+
+      const session = await stripe.checkout.sessions.create(stripeOptions);
+
+      const checkoutSession = await prisma.checkoutSession.update({
+        where: { id: order.checkoutSession.id },
+        data: {
+          sessionId: session.id,
+          url: session.url,
+          expiresAt: session.expires_at,
+        },
+        include: {
+          order: {
+            include: {
+              orderItems: { include: { product: true } },
+              shipment: true,
+              receipt: true,
+              payment: true,
+              checkoutSession: true,
+            },
+          },
+        },
+      });
+
+      return { __typename: "CheckoutSession", ...checkoutSession.order, orderId };
+    }
+
+    const cartItems = user.cart.cartItems;
+
+    if (cartItems.length < 1) {
+      throw new Error("There no items to checkout.");
+    }
+
+    stripeOptions.line_items = cartItems.map((item) => {
+      return {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.product.name,
+            description: item.product.description,
+            images: [`https://picsum.photos/1920/1280.webp?random=${item.productId}`],
+          },
+          unit_amount: item.product.price,
+        },
+        quantity: item.quantity,
+      };
     });
 
-    // console.log(session);
+    const session = await stripe.checkout.sessions.create(stripeOptions);
 
     const amountSubtotal = calculateTotalPrice(cartItems);
 
@@ -417,8 +478,6 @@ async function checkoutOrder(_, {}, context) {
         checkoutSession: true,
       },
     });
-
-    // console.log(order);
 
     return { __typename: "CheckoutSession", ...order.checkoutSession, orderId: order.id };
   } catch (error) {

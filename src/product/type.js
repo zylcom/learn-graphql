@@ -215,7 +215,7 @@ const productType = `#graphql
   }
 
   type Mutation {
-    checkoutOrder: CheckoutResult
+    checkoutOrder(orderId: Int): CheckoutResult
     createReview(productId: Int!, description: String, rating: Int!): CreateReviewResult
     likeProduct(productId: Int!): LikeProductResult
     neutralizeLikeProduct(productId: Int!): NeutralizeLikeProductResult
