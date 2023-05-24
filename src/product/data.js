@@ -318,7 +318,6 @@ async function checkoutOrder(_, { orderId }, context) {
       customer_email: user.email,
       mode: "payment",
       success_url: "http://localhost:5173/checkout-success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:5173/cart",
       client_reference_id: user.id + "",
       phone_number_collection: { enabled: true },
       shipping_address_collection: {
@@ -385,6 +384,7 @@ async function checkoutOrder(_, { orderId }, context) {
         return { __typename: "CheckoutSession", ...order.checkoutSession, orderId: order.id };
       }
 
+      stripeOptions.cancel_url = `http://localhost:5173/order/${order.id}`;
       stripeOptions.line_items = order.orderItems.map((item) => {
         return {
           price_data: {
@@ -408,17 +408,6 @@ async function checkoutOrder(_, { orderId }, context) {
           sessionId: session.id,
           url: session.url,
           expiresAt: session.expires_at,
-        },
-        include: {
-          order: {
-            include: {
-              orderItems: { include: { product: true } },
-              shipment: true,
-              receipt: true,
-              payment: true,
-              checkoutSession: true,
-            },
-          },
         },
       });
 
@@ -446,8 +435,6 @@ async function checkoutOrder(_, { orderId }, context) {
       };
     });
 
-    const session = await stripe.checkout.sessions.create(stripeOptions);
-
     const amountSubtotal = calculateTotalPrice(cartItems);
 
     const order = await prisma.orderRecord.create({
@@ -455,13 +442,6 @@ async function checkoutOrder(_, { orderId }, context) {
         user: { connect: { id: user.id } },
         amountSubtotal,
         amountTotal: amountSubtotal,
-        checkoutSession: {
-          create: {
-            sessionId: session.id,
-            url: session.url,
-            expiresAt: session.expires_at,
-          },
-        },
         orderItems: {
           createMany: {
             data: cartItems.map((item) => {
@@ -470,16 +450,17 @@ async function checkoutOrder(_, { orderId }, context) {
           },
         },
       },
-      include: {
-        orderItems: { include: { product: true } },
-        shipment: true,
-        receipt: true,
-        payment: true,
-        checkoutSession: true,
-      },
     });
 
-    return { __typename: "CheckoutSession", ...order.checkoutSession, orderId: order.id };
+    stripeOptions.cancel_url = `http://localhost:5173/order/${order.id}`;
+
+    const session = await stripe.checkout.sessions.create(stripeOptions);
+
+    const checkoutSession = await prisma.checkoutSession.create({
+      data: { sessionId: session.id, url: session.url, expiresAt: session.expires_at, order: { connect: { id: order.id } } },
+    });
+
+    return { __typename: "CheckoutSession", ...checkoutSession, orderId: order.id };
   } catch (error) {
     console.error(error);
 
