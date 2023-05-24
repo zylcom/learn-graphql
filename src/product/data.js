@@ -381,7 +381,7 @@ async function checkoutOrder(_, { orderId }, context) {
         throw new Error("Order invalid");
       }
 
-      if (Date.now() < order.checkoutSession.expiresAt) {
+      if (Date.now() < order.checkoutSession.expiresAt * 1000) {
         return { __typename: "CheckoutSession", ...order.checkoutSession, orderId: order.id };
       }
 
@@ -422,7 +422,7 @@ async function checkoutOrder(_, { orderId }, context) {
         },
       });
 
-      return { __typename: "CheckoutSession", ...checkoutSession.order, orderId };
+      return { __typename: "CheckoutSession", ...checkoutSession, orderId };
     }
 
     const cartItems = user.cart.cartItems;
