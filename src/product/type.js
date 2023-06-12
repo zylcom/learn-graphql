@@ -130,7 +130,7 @@ const productType = `#graphql
   }
 
   type ProductList {
-    edges: [Edge]
+    edges: [Edge]!
     pageInfo: PageInfo
   }
 
