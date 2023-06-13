@@ -75,7 +75,7 @@ app.post(
           const order = await prisma.orderRecord.update({
             where: { checkoutSessionId: checkoutSessionCompleted.id },
             data: {
-              status: checkoutSessionCompleted.status,
+              status: "preparing",
               amountSubtotal: checkoutSessionCompleted.amount_subtotal,
               amountTotal: checkoutSessionCompleted.amount_total,
               receipt: { create: { user: { connect: { id: +checkoutSessionCompleted.client_reference_id } } } },
@@ -98,14 +98,13 @@ app.post(
                   name: checkoutSessionCompleted.customer_details.name,
                   phone: checkoutSessionCompleted.customer_details.phone,
                   deliverCost: checkoutSessionCompleted.shipping_cost.amount_total,
+                  arrivedAt,
                 },
               },
             },
           });
 
           await prisma.cart.update({ where: { id: order.userId }, data: { cartItems: { deleteMany: {} } } });
-
-          console.log(checkoutSessionCompleted, "checkout.session.completed");
         } catch (error) {
           console.log(error.message);
         }

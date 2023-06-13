@@ -188,7 +188,9 @@ CREATE TABLE `Shipment` (
     `zipCode` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
+    `status` VARCHAR(191) NOT NULL DEFAULT 'preparing',
     `deliverCost` INTEGER NOT NULL DEFAULT 0,
+    `arrivedAt` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `Shipment_orderId_key`(`orderId`),

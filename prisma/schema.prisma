@@ -187,6 +187,8 @@ model Shipment {
   zipCode     String
   name        String
   phone       String
+  status      String      @default("preparing")
   deliverCost Int         @default(0)
+  arrivedAt   Int
   createdAt   DateTime    @default(now())
 }

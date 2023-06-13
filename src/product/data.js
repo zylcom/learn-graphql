@@ -25,18 +25,26 @@ async function getAllProductTag() {
 }
 
 async function getFilteredProducts(_, { take, category = "", tag = "", cursor, keyword = "" }) {
-  const products = await prisma.product.findMany({
-    take: take ? take : undefined,
-    skip: cursor === undefined ? 0 : 1,
-    cursor,
-    where: {
-      name: { contains: keyword },
-      category: { slug: { contains: category } },
-      tags: { some: { tag: { slug: { contains: tag } } } },
-    },
-    include: { likes: { select: { userId: true } } },
-    orderBy: { id: "asc" },
-  });
+  const products = await prisma.product
+    .findMany({
+      take: take ? take : undefined,
+      skip: cursor === undefined ? 0 : 1,
+      cursor,
+      where: {
+        name: { contains: keyword },
+        category: { slug: { contains: category } },
+        tags: { some: { tag: { slug: { contains: tag } } } },
+      },
+      include: {
+        likes: { select: { userId: true } },
+        category: true,
+        tags: { select: { tag: { select: { id: true, name: true, slug: true, createdAt: true, updatedAt: true } } } },
+      },
+      orderBy: { id: "asc" },
+    })
+    .then((result) => {
+      return result.map((data) => ({ ...data, tags: data.tags.map(({ tag }) => tag) }));
+    });
 
   if (products.length < 1) {
     return { __typename: "ProductError", message: "Products is empty!" };
