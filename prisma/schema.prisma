@@ -3,192 +3,192 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Category {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(255)
-  slug      String    @unique @db.VarChar(255)
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+model ProductToTag {
+  A Int
+  B Int
+
+  @@unique([A, B], map: "_ProductToTag_AB_unique")
+  @@index([B], map: "_ProductToTag_B_index")
+  @@map("_ProductToTag")
 }
 
-model Product {
-  id          Int              @id @default(autoincrement())
-  name        String           @db.VarChar(255)
-  slug        String           @unique @db.VarChar(255)
-  image       String           @db.VarChar(255)
+model cart_items {
+  id          Int      @id @default(autoincrement())
+  cartId      Int
+  productSlug String
+  quantity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@unique([productSlug, cartId])
+  @@index([cartId])
+}
+
+model carts {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique @db.VarChar(100)
+  totalPrice Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+}
+
+model categories {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  slug      String   @unique @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model feedbacks {
+  id          Int      @id @default(autoincrement())
+  username    String?
+  guestId     String?
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model likes {
+  id          Int      @id @default(autoincrement())
+  productSlug String
+  username    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@unique([productSlug, username])
+  @@index([username])
+}
+
+model order_items {
+  id          Int      @id @default(autoincrement())
+  orderId     String
+  productSlug String?
+  productName String   @db.VarChar(100)
   price       Int
-  description String?          @db.Text
-  ingredients String?          @db.Text
-  categoryId  Int
-  category    Category         @relation(fields: [categoryId], references: [id])
-  tags        TagsOnProducts[]
-  reviews     Review[]
-  likes       ProductLikes[]
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  quantity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([orderId])
+  @@index([productSlug])
 }
 
-model Tag {
-  id        Int              @id @default(autoincrement())
-  name      String           @db.VarChar(255)
-  slug      String           @unique @db.VarChar(255)
-  products  TagsOnProducts[]
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+model orders {
+  id               String   @id
+  username         String?
+  name             String?
+  guestId          String?
+  email            String?
+  phone            String   @db.VarChar(25)
+  status           String   @default("uncomplete") @db.VarChar(50)
+  transactionToken String?
+  total            Int
+  subTotal         Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+
+  @@index([username])
 }
 
-model TagsOnProducts {
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-  tag       Tag      @relation(fields: [tagId], references: [id])
+model payments {
+  id            Int      @id @default(autoincrement())
+  status        String   @default("unpaid") @db.VarChar(50)
+  method        String?  @db.VarChar(50)
+  name          String
+  signatureKey  String?
+  transactionId String?
+  store         String?
+  currency      String?
+  username      String?
+  guestId       String?
+  amount        Int
+  orderId       String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+}
+
+model products {
+  id            Int      @id @default(autoincrement())
+  name          String   @db.VarChar(100)
+  slug          String   @unique @db.VarChar(100)
+  image         String   @default("https://res.cloudinary.com/dk9bcf16t/image/upload/v1699505599/default_v5bzrz.jpg") @db.VarChar(255)
+  price         Int
+  averageRating Float?
+  description   String?
+  ingredients   String?
+  categorySlug  String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+
+  @@index([categorySlug])
+}
+
+model profiles {
+  id      Int     @id @default(autoincrement())
+  name    String  @db.VarChar(100)
+  address String? @db.VarChar(100)
+  avatar  String  @default("avatar-default.jpg") @db.VarChar(100)
+  userId  Int     @unique
+}
+
+model reviews {
+  id          Int      @id @default(autoincrement())
+  productSlug String
+  username    String
+  description String?
+  rating      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@unique([productSlug, username])
+  @@index([username])
+}
+
+model shipments {
+  id         Int       @id @default(autoincrement())
+  orderId    String    @unique
+  address    String    @db.VarChar(100)
+  city       String    @db.VarChar(100)
+  detail     String
+  state      String    @db.VarChar(100)
+  postalCode String    @db.VarChar(25)
+  status     String    @default("onprogress") @db.VarChar(50)
+  method     String    @db.VarChar(50)
+  name       String    @db.VarChar(100)
+  phone      String    @db.VarChar(25)
+  cost       Int       @default(0)
+  arrivedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+}
+
+model tags {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  slug      String   @unique @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model tags_on_products {
+  id        Int      @id @default(autoincrement())
+  productId Int?
   tagId     Int
   createdAt DateTime @default(now())
 
-  @@id([productId, tagId])
+  @@unique([productId, tagId])
+  @@index([productId])
+  @@index([tagId])
 }
 
-model User {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  phoneNumber  String         @unique
-  name         String         @db.VarChar(255)
-  password     String
-  avatar       String         @db.VarChar(255)
-  reviews      Review[]
-  likes        ProductLikes[]
-  cart         Cart?
-  orderRecords OrderRecord[]
-  shipments    Shipment[]
-  receipts     Receipt[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-}
-
-model Review {
-  id          Int      @id @default(autoincrement())
-  product     Product  @relation(fields: [productId], references: [id])
-  productId   Int
-  user        User     @relation(fields: [userId], references: [id])
-  userId      Int
-  description String?  @db.Text
-  rating      Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([productId, userId], name: "review")
-}
-
-model ProductLikes {
-  id        Int      @id @default(autoincrement())
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([productId, userId], name: "like")
-}
-
-model Cart {
-  id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id])
-  userId    Int        @unique
-  cartItems CartItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
-
-model CartItem {
-  id        Int      @id @default(autoincrement())
-  cart      Cart     @relation(fields: [cartId], references: [id])
-  cartId    Int
-  product   Product  @relation(fields: [productId], references: [id])
-  productId Int
-  quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([productId, cartId], name: "productItem")
-}
-
-model OrderItem {
-  id          Int         @id @default(autoincrement())
-  product     Product     @relation(fields: [productId], references: [id])
-  productId   Int
-  quantity    Int
-  createdAt   DateTime    @default(now())
-  orderRecord OrderRecord @relation(fields: [orderId], references: [id])
-  orderId     Int
-}
-
-model OrderRecord {
-  id                Int              @id @default(autoincrement())
-  user              User             @relation(fields: [userId], references: [id])
-  userId            Int
-  checkoutSession   CheckoutSession? @relation(fields: [checkoutSessionId], references: [sessionId])
-  checkoutSessionId String?          @unique
-  orderItems        OrderItem[]
-  payment           Payment?
-  receipt           Receipt?
-  shipment          Shipment?
-  amountSubtotal    Int
-  amountTotal       Int
-  status            String           @default("uncomplete")
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-}
-
-model CheckoutSession {
-  id        Int          @id @default(autoincrement())
-  sessionId String       @unique @db.VarChar(255)
-  order     OrderRecord?
-  url       String       @db.LongText
-  expiresAt Int
-}
-
-model Receipt {
-  id          Int         @id @default(autoincrement())
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
-  orderRecord OrderRecord @relation(fields: [orderId], references: [id])
-  orderId     Int         @unique
-  createdAt   DateTime    @default(now())
-}
-
-model Payment {
-  id          Int         @id @default(autoincrement())
-  orderRecord OrderRecord @relation(fields: [orderId], references: [id])
-  orderId     Int         @unique
-  method      String
-  amount      Int
-  status      String      @default("unpaid")
-  createdAt   DateTime    @default(now())
-}
-
-model Shipment {
-  id          Int         @id @default(autoincrement())
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
-  orderRecord OrderRecord @relation(fields: [orderId], references: [id])
-  orderId     Int         @unique
-  address     String
-  city        String
-  detail      String
-  state       String
-  country     String
-  zipCode     String
-  name        String
-  phone       String
-  status      String      @default("preparing")
-  deliverCost Int         @default(0)
-  arrivedAt   Int
-  createdAt   DateTime    @default(now())
+model users {
+  id          Int    @id @default(autoincrement())
+  username    String @unique @db.VarChar(100)
+  phonenumber String @db.VarChar(100)
+  password    String @db.VarChar(100)
 }
